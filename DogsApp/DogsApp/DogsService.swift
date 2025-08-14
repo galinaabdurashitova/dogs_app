@@ -14,7 +14,7 @@ protocol DogsServiceProtocol {
 
 class DogsService: DogsServiceProtocol {
     func fetchDogs(page: Int, limit: Int) async throws -> Dog {
-//        let keyHeader: HTTPHeaders = ["x-api-key": "live_QHgaBL3kdnwF4ZZZ6HkPq2Dpg7uMN4d67CSLM0feVBZzkxQxX3zW1DJIdJ1sX6eA"]
+//        let keyHeader: HTTPHeaders = ["x-api-key": ""]
         let response = await AF
             .request(
                 "https://dog.ceo/api/breeds/image/random",
