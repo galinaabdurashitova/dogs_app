@@ -9,19 +9,16 @@ import Alamofire
 import Foundation
 
 protocol DogsServiceProtocol {
-    func fetchDogs(page: Int, limit: Int) async throws -> Dog
+    func fetchDogs() async throws -> Dog
 }
 
 class DogsService: DogsServiceProtocol {
-    func fetchDogs(page: Int, limit: Int) async throws -> Dog {
-//        let keyHeader: HTTPHeaders = ["x-api-key": ""]
+    func fetchDogs() async throws -> Dog {
         let response = await AF
             .request(
                 "https://dog.ceo/api/breeds/image/random",
-//                headers: keyHeader,
                 interceptor: .retryPolicy
             )
-//            .authenticate(username: "user", password: "pass")
             .cacheResponse(using: .cache)
             .redirect(using: .follow)
             .validate()
@@ -33,24 +30,4 @@ class DogsService: DogsServiceProtocol {
         
         return try response.result.get()
     }
-}
-
-struct Dog: Codable {
-    var message: String
-    var status: String
-    //    "entities": [],
-    //    "breeds": [
-    //      {
-    //        "id": 3,
-    //        "name": "Alaskan Malamute",
-    //        "wikipedia_url": "https://en.wikipedia.org/wiki/Alaskan_Malamute"
-    //      },
-    //      {
-    //        "id": 2,
-    //        "name": "Akita",
-    //        "wikipedia_url": "https://en.wikipedia.org/wiki/Akita_(dog)"
-    //      }
-    //    ],
-    //    "animals": [],
-    //    "categories": []
 }
