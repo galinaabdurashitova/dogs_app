@@ -13,6 +13,7 @@ class DogView: UIView {
     private lazy var label: UILabel = {
         let l = UILabel()
         l.translatesAutoresizingMaskIntoConstraints = false
+        l.textAlignment = .center
         l.numberOfLines = 1
         return l
     }()
@@ -20,14 +21,16 @@ class DogView: UIView {
     lazy var dogButton: UIButton = {
         let b = UIButton()
         b.translatesAutoresizingMaskIntoConstraints = false
+        b.layer.cornerRadius = 12
+        b.clipsToBounds = true
         return b
     }()
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFit
-        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+//        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -42,22 +45,21 @@ class DogView: UIView {
     }
     
     private func setupView() {
-        backgroundColor = .secondarySystemBackground
+        backgroundColor = .clear
         addSubview(label)
         addSubview(dogButton)
         dogButton.addSubview(imageView)
         
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: topAnchor, constant: 12),
             label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            label.heightAnchor.constraint(equalToConstant: 20),
-
-            dogButton.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
+            label.bottomAnchor.constraint(equalTo: dogButton.topAnchor, constant: -12),
+            
+            dogButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             dogButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             dogButton.heightAnchor.constraint(equalToConstant: 200),
+            dogButton.widthAnchor.constraint(equalToConstant: 200),
 
-            dogButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
             
             imageView.topAnchor.constraint(equalTo: dogButton.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: dogButton.leadingAnchor),

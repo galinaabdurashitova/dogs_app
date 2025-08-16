@@ -8,7 +8,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-    private let doggyService = DogsService()
+    private let doggyService: DogsServiceProtocol = DogsService()
     private lazy var dogView: DogView = DogView()
     
     override func viewDidLoad() {
@@ -23,10 +23,12 @@ class ViewController: UIViewController {
         )
         
         NSLayoutConstraint.activate([
-            dogView.topAnchor.constraint(equalTo: view.topAnchor),
-            dogView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            dogView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            dogView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            dogView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            dogView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            dogView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            dogView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            dogView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            dogView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
         loadDog()
@@ -45,7 +47,7 @@ class ViewController: UIViewController {
                     dogView.configure(with: dog)
                 }
             } catch {
-                print("error")
+                print("error: \(error.localizedDescription)")
             }
         }
     }
