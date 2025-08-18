@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2A49FFC02E4E61F3003C107C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 2A49FFBF2E4E61F3003C107C /* Alamofire */; };
 		2A49FFEB2E4E6705003C107C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2A49FFEA2E4E6705003C107C /* Kingfisher */; };
+		2AADE2ED2E539D67001B64D9 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2AADE2EC2E539D67001B64D9 /* RealmSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2AADE2ED2E539D67001B64D9 /* RealmSwift in Frameworks */,
 				2A49FFEB2E4E6705003C107C /* Kingfisher in Frameworks */,
 				2A49FFC02E4E61F3003C107C /* Alamofire in Frameworks */,
 			);
@@ -148,6 +150,7 @@
 			packageProductDependencies = (
 				2A49FFBF2E4E61F3003C107C /* Alamofire */,
 				2A49FFEA2E4E6705003C107C /* Kingfisher */,
+				2AADE2EC2E539D67001B64D9 /* RealmSwift */,
 			);
 			productName = DogsApp;
 			productReference = 2A49FF8A2E4E61AB003C107C /* DogsApp.app */;
@@ -234,6 +237,7 @@
 			packageReferences = (
 				2A49FFBE2E4E61F3003C107C /* XCRemoteSwiftPackageReference "Alamofire" */,
 				2A49FFE92E4E6705003C107C /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				2AADE2EB2E539D67001B64D9 /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2A49FF8B2E4E61AB003C107C /* Products */;
@@ -624,6 +628,14 @@
 				minimumVersion = 8.5.0;
 			};
 		};
+		2AADE2EB2E539D67001B64D9 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -636,6 +648,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2A49FFE92E4E6705003C107C /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		2AADE2EC2E539D67001B64D9 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2AADE2EB2E539D67001B64D9 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
