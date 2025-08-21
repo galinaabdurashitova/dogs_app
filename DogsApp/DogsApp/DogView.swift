@@ -34,6 +34,16 @@ class DogView: UIView {
         return imageView
     }()
     
+    lazy var likeButton: UIButton = {
+       let button = UIButton()
+        button.tintColor = .systemRed
+        let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular)
+        let image = UIImage(systemName: "heart", withConfiguration: config)
+        button.setImage(image, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -48,6 +58,7 @@ class DogView: UIView {
         backgroundColor = .clear
         addSubview(label)
         addSubview(dogButton)
+        addSubview(likeButton)
         dogButton.addSubview(imageView)
         
         NSLayoutConstraint.activate([
@@ -59,12 +70,16 @@ class DogView: UIView {
             dogButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             dogButton.heightAnchor.constraint(equalToConstant: 200),
             dogButton.widthAnchor.constraint(equalToConstant: 200),
-
             
             imageView.topAnchor.constraint(equalTo: dogButton.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: dogButton.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: dogButton.trailingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: dogButton.bottomAnchor)
+            imageView.bottomAnchor.constraint(equalTo: dogButton.bottomAnchor),
+            
+            likeButton.topAnchor.constraint(equalTo: dogButton.bottomAnchor, constant: 16),
+            likeButton.leadingAnchor.constraint(equalTo: leadingAnchor),
+            likeButton.trailingAnchor.constraint(equalTo: trailingAnchor),
+            likeButton.centerXAnchor.constraint(equalTo: centerXAnchor)
         ])
     }
     

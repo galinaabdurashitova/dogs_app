@@ -20,11 +20,12 @@ protocol DogsRepositoryProtocol {
 
 class DogsRepository: DogsRepositoryProtocol {
     private let dogService: DogsServiceProtocol
-    private let db: Realm
+    private let store = DogStore()
     
-    init(dogService: DogsServiceProtocol, db: Realm) {
+    init(
+        dogService: DogsServiceProtocol = DogsService()
+    ) {
         self.dogService = dogService
-        self.db = db
     }
     
     func fetchDog() async throws -> Dog {
@@ -32,23 +33,30 @@ class DogsRepository: DogsRepositoryProtocol {
     }
     
     func saveDog(_ dog: Dog) async throws {
-        let dogEntity = DogEntity()
-        dogEntity.status = dog.status
-        dogEntity.message = dog.message
-        dogEntity.saveDate = Date()
-        
-        do {
-            try db.write {
-                db.add(dogEntity)
-            }
-        } catch {
-            throw DogRepositoryError.willDoLater
-        }
+        try await store.save(dog)
     }
     
     func fetchSavedDogs() async throws -> [Dog] {
-        let savedDogs = db.objects(DogEntity.self)
-        let dogs = Array(savedDogs).map { Dog(message: $0.message, status: $0.status) }
-        return dogs
+        let savedDogs = try await store.fetchAll()
+        print(savedDogs)
+        return savedDogs
+    }
+}
+
+actor DogStore {
+    private let config = Realm.Configuration.defaultConfiguration
+
+    func save(_ dog: Dog) throws {
+        let realm = try Realm(configuration: config)
+        let e = DogEntity()
+        e.status = dog.status
+        e.message = dog.message
+        e.saveDate = Date()
+        try realm.write { realm.add(e) }
+    }
+
+    func fetchAll() throws -> [Dog] {
+        let realm = try Realm(configuration: config)
+        return realm.objects(DogEntity.self).map { Dog(message: $0.message, status: $0.status) }
     }
 }
