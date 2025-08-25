@@ -31,10 +31,3 @@ class DogsService: DogsServiceProtocol {
         return try response.result.get()
     }
 }
-
-
-class MockDogsService: DogsServiceProtocol {
-    func fetchDogs() async throws -> Dog {
-        return Dog(message: "https://images.dog.ceo/breeds/australian-shepherd/forest.jpg", status: "success")
-    }
-}
