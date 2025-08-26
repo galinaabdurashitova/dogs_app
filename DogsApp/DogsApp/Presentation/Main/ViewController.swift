@@ -25,14 +25,14 @@ class ViewController: UIViewController {
         super.init(coder: coder)
     }
     
+    private lazy var dogView: DogView = DogView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUI()
+        setupNavigation()
         loadDog()
     }
-    
-    
-    private lazy var dogView: DogView = DogView()
     
     private func setUpUI() {
         view.backgroundColor = .white
@@ -50,10 +50,6 @@ class ViewController: UIViewController {
         setConstraints()
     }
     
-    deinit {
-        loadTask?.cancel()
-    }
-    
     private func setConstraints() {
         NSLayoutConstraint.activate([
             dogView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -63,6 +59,24 @@ class ViewController: UIViewController {
             dogView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             dogView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+    }
+    
+    deinit {
+        loadTask?.cancel()
+    }
+    
+    private func setupNavigation() {
+        title = "Dogs"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Saved Dogs",
+            style: .plain,
+            target: self,
+            action: #selector(openLibrary)
+        )
+    }
+
+    @objc private func openLibrary() {
+        onShowLibrary?()
     }
     
     private func loadDog() {
@@ -105,6 +119,7 @@ class ViewController: UIViewController {
     
     
     private func isFavorite(_ dog: Dog) async -> Bool {
+        // TODO: A special method to fetch bool
         guard let all = try? await doggyRepo.fetchSavedDogs() else { return false }
         return all.contains { $0.message == dog.message }
     }
