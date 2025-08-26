@@ -13,6 +13,8 @@ class ViewController: UIViewController {
     private var isCurrentLiked = false
     private var loadTask: Task<Void, Never>?
     
+    var onShowLibrary: (() -> Void)?
+    
     init(doggyRepo: DogsRepositoryProtocol = DogsRepository()) {
         self.doggyRepo = doggyRepo
         super.init(nibName: nil, bundle: nil)
