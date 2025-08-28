@@ -12,10 +12,29 @@ final class SavedDogsViewController: UIViewController {
     private var savedDogs: [Dog] = []
     private var loadTask: Task<Void, Never>?
     
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 12
+        layout.minimumInteritemSpacing = 12
+
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.backgroundColor = .systemBackground
+        cv.contentInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        cv.dataSource = self
+        cv.delegate = self
+        cv.register(SavedDogCell.self, forCellWithReuseIdentifier: SavedDogCell.reuseID)
+        return cv
+    }()
+    
+    private let emptyLabel: UILabel = {
+        let l = UILabel()
+        l.translatesAutoresizingMaskIntoConstraints = false
+        l.text = "No saved dogs yet"
+        l.textAlignment = .center
+        l.textColor = .secondaryLabel
+        l.isHidden = true
+        return l
     }()
     
     init(doggyRepo: DogsRepositoryProtocol = DogsRepository()) {
@@ -30,22 +49,32 @@ final class SavedDogsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Saved Dogs"
         setUpUI()
+        loadSavedDogs()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         loadSavedDogs()
     }
     
     private func setUpUI() {
         view.backgroundColor = .white
-        view.addSubview(scrollView)
+        view.addSubview(collectionView)
+        view.addSubview(emptyLabel)
         setConstraints()
     }
     
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+
+            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
@@ -58,11 +87,49 @@ final class SavedDogsViewController: UIViewController {
         loadTask = Task { [weak self] in
             guard let self else { return }
             do {
-                savedDogs = try await doggyRepo.fetchSavedDogs()
+                let dogs = try await doggyRepo.fetchSavedDogs()
+                await MainActor.run {
+                    self.savedDogs = dogs
+                    self.collectionView.reloadData()
+                    self.emptyLabel.isHidden = !dogs.isEmpty
+                }
             } catch {
-                // TODO: Error handling
-                print("Failed to load saved dogs: \(error.localizedDescription)")
+                await MainActor.run {
+                    // TODO: Error handling
+                    print("Failed to load saved dogs: \(error.localizedDescription)")
+                    self.savedDogs = []
+                    self.collectionView.reloadData()
+                    self.emptyLabel.isHidden = false
+                }
             }
         }
+    }
+}
+
+extension SavedDogsViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    private var columns: CGFloat { 2 }
+    private var spacing: CGFloat { 12 }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        savedDogs.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: SavedDogCell.reuseID,
+            for: indexPath
+        ) as! SavedDogCell
+        cell.configure(with: savedDogs[indexPath.item])
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let insets = collectionView.contentInset
+        let totalSpacing = spacing * (columns - 1) + insets.left + insets.right
+        let width = floor((collectionView.bounds.width - totalSpacing) / columns)
+        return CGSize(width: width, height: width)
     }
 }
