@@ -46,7 +46,7 @@ final class SavedDogCell: UICollectionViewCell {
     }
 
     func configure(with dog: Dog) {
-        if let url = URL(string: dog.message) {
+        if let url = URL(string: dog.imageUrl) {
             imageView.kf.indicatorType = .activity
             imageView.kf.setImage(
                 with: url,

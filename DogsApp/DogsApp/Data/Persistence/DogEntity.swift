@@ -9,7 +9,7 @@ import Foundation
 import RealmSwift
 
 class DogEntity: Object {
-    @Persisted var message: String
+    @Persisted(primaryKey: true) var imageUrl: String
     @Persisted var status: String
     @Persisted var saveDate: Date
 }

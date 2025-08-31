@@ -8,6 +8,8 @@
 import Foundation
 
 struct Dog: Codable {
-    var message: String
+    var id: String { imageUrl }
+    var imageUrl: String
     var status: String
+    var saveDate: Date?
 }

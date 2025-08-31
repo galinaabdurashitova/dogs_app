@@ -8,7 +8,7 @@
 import Foundation
 
 class MockDogsService: DogsServiceProtocol {
-    func fetchDogs() async throws -> Dog {
-        return Dog(message: "https://images.dog.ceo/breeds/australian-shepherd/forest.jpg", status: "success")
+    func fetchRandomDog() async throws -> DogDTO {
+        return DogDTO(message: "https://images.dog.ceo/breeds/australian-shepherd/forest.jpg", status: "success")
     }
 }

@@ -9,11 +9,11 @@ import Alamofire
 import Foundation
 
 protocol DogsServiceProtocol {
-    func fetchDogs() async throws -> Dog
+    func fetchRandomDog() async throws -> DogDTO
 }
 
 class DogsService: DogsServiceProtocol {
-    func fetchDogs() async throws -> Dog {
+    func fetchRandomDog() async throws -> DogDTO {
         let response = await AF
             .request(
                 "https://dog.ceo/api/breeds/image/random",
@@ -25,7 +25,7 @@ class DogsService: DogsServiceProtocol {
             .cURLDescription { description in
                 print(description)
             }
-            .serializingDecodable(Dog.self)
+            .serializingDecodable(DogDTO.self)
             .response
         
         return try response.result.get()

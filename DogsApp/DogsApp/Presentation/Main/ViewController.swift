@@ -88,7 +88,7 @@ class ViewController: UIViewController {
                 self.selectedDog = dog
                 self.isCurrentLiked = await self.isFavorite(dog)
                 let dogData = DogViewData(
-                    imageURL: URL(string: dog.message),
+                    imageURL: URL(string: dog.imageUrl),
                     isLiked: self.isCurrentLiked
                 )
                 self.dogView.apply(dogData)
@@ -104,7 +104,7 @@ class ViewController: UIViewController {
         Task {
             do {
                 if isCurrentLiked {
-                    // TODO: Remove like
+                    try await doggyRepo.deleteSavedDog(dog)
                 } else {
                     try await doggyRepo.saveDog(dog)
                 }
@@ -119,9 +119,7 @@ class ViewController: UIViewController {
     
     
     private func isFavorite(_ dog: Dog) async -> Bool {
-        // TODO: A special method to fetch bool
-        guard let all = try? await doggyRepo.fetchSavedDogs() else { return false }
-        return all.contains { $0.message == dog.message }
+        return (try? await doggyRepo.getDogSaveStatus(dog)) ?? false
     }
 }
 
