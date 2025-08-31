@@ -55,15 +55,15 @@ class DogView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
+        setUpView()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupView()
+        setUpView()
     }
     
-    private func setupView() {
+    private func setUpView() {
         backgroundColor = .clear
         addSubview(vstack)
         vstack.addArrangedSubview(dogButton)

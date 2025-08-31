@@ -11,6 +11,7 @@ final class SavedDogsViewController: UIViewController {
     private let doggyRepo: DogsRepositoryProtocol
     private var savedDogs: [Dog] = []
     private var loadTask: Task<Void, Never>?
+    private var deleteMode: Bool = false
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -51,7 +52,7 @@ final class SavedDogsViewController: UIViewController {
         super.viewDidLoad()
         title = "Saved Dogs"
         setUpUI()
-        loadSavedDogs()
+        updateNavButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,6 +83,27 @@ final class SavedDogsViewController: UIViewController {
         loadTask?.cancel()
     }
     
+    private func updateNavButton() {
+        let title = deleteMode ? "Done" : "Delete Dogs"
+        let color: UIColor = deleteMode ? .systemBlue : .systemRed
+
+        let item = UIBarButtonItem(
+            title: title,
+            style: .plain,
+            target: self,
+            action: #selector(switchDogsDeleteMode)
+        )
+        item.tintColor = color
+        navigationItem.rightBarButtonItem = item
+    }
+    
+    @objc private func switchDogsDeleteMode() {
+        deleteMode.toggle()
+        updateNavButton()
+        collectionView.reloadData()
+        print("New value: " + (deleteMode ? "true" : "false"))
+    }
+    
     private func loadSavedDogs() {
         loadTask?.cancel()
         loadTask = Task { [weak self] in
@@ -104,6 +126,28 @@ final class SavedDogsViewController: UIViewController {
             }
         }
     }
+    
+    private func deleteDog(_ dog: Dog) {
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await doggyRepo.deleteSavedDog(dog)
+                if let dogIndex = self.savedDogs.firstIndex(where: { $0.id == dog.id }) {
+                    self.savedDogs.remove(at: dogIndex)
+                    await MainActor.run {
+                        self.collectionView.performBatchUpdates({
+                            self.collectionView.deleteItems(at: [IndexPath(item: dogIndex, section: 0)])
+                        }, completion: { _ in
+                            self.emptyLabel.isHidden = !self.savedDogs.isEmpty
+                        })
+                    }
+                }
+            } catch {
+                // TODO: Error handling
+                print("Delete failed: \(error)")
+            }
+        }
+    }
 }
 
 extension SavedDogsViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -120,7 +164,12 @@ extension SavedDogsViewController: UICollectionViewDataSource, UICollectionViewD
             withReuseIdentifier: SavedDogCell.reuseID,
             for: indexPath
         ) as! SavedDogCell
-        cell.configure(with: savedDogs[indexPath.item])
+        let dog = savedDogs[indexPath.item]
+        cell.configure(with: dog)
+        cell.setDeleteMode(deleteMode)
+        cell.onDeleteTapped = { [weak self] in
+            self?.deleteDog(dog)
+        }
         return cell
     }
 
